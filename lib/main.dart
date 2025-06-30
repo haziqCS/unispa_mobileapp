@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/screens/auth_page.dart';
+import 'package:unispa_mobileapp/screens/booking_page.dart';
+import 'package:unispa_mobileapp/screens/doctor_details.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:unispa_mobileapp/utils/main_layout.dart';
 
@@ -39,7 +41,8 @@ class MyApp extends StatelessWidget {
           showSelectedLabels: true,
           showUnselectedLabels: false,
           unselectedItemColor: Colors.grey.shade700,
-          elevation: 10, type: BottomNavigationBarType.fixed,
+          elevation: 10,
+          type: BottomNavigationBarType.fixed,
         ),
         primarySwatch: Colors.blue,
       ),
@@ -50,10 +53,10 @@ class MyApp extends StatelessWidget {
         '/': (context) => const AuthPage(),
         //This is for main layout after login
         'main': (context) => const MainLayout(),
+        'doc_details': (context) => const DoctorDetails(),
+        'booking_page': (context) => const BookingPage(),
       },
       //home: const MyHomePage(title: 'UniSpa App'),
     );
   }
 }
-
-
