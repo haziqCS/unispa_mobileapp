@@ -5,7 +5,7 @@ import 'package:unispa_mobileapp/components/doctor_card.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();

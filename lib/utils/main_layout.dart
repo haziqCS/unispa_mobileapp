@@ -4,7 +4,7 @@ import 'package:unispa_mobileapp/screens/appointment_page.dart';
 import 'package:unispa_mobileapp/screens/home_page.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({Key? key}) : super(key: key);
+  const MainLayout({super.key});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
