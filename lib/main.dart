@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/screens/auth_page.dart';
 import 'package:unispa_mobileapp/screens/booking_page.dart';
 import 'package:unispa_mobileapp/screens/doctor_details.dart';
+import 'package:unispa_mobileapp/screens/register_page.dart';
 import 'package:unispa_mobileapp/screens/success_booked.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:unispa_mobileapp/utils/main_layout.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const AuthPage(),
+        'register': (context) => const RegisterPage(),
         //This is for main layout after login
         'main': (context) => const MainLayout(),
         'doc_details': (context) => const DoctorDetails(),

@@ -21,6 +21,17 @@ class _BookingPageState extends State<BookingPage> {
   bool _isWeekend = false;
   bool _dateSelected = false;
   bool _timeSelected = false;
+
+  int _pax = 1; // default pax
+  String? _selectedPackage; // selected package name
+
+  final List<String> _packages = [
+    'Full Body Massage',
+    'Facial Treatment',
+    'Aromatherapy',
+    'Reflexology',
+  ];
+
   @override
   Widget build(BuildContext context) {
     Config().init(context);
@@ -36,11 +47,89 @@ class _BookingPageState extends State<BookingPage> {
               children: <Widget>[
                 //Display calendar here
                 _tableCalendar(),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-                  child: Text(
-                    'Select Therapy Time',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Pax input
+                      const Text(
+                        'Number of Pax:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextFormField(
+                          initialValue: _pax.toString(),
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Enter number of pax',
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _pax = int.tryParse(value) ?? 1;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Package dropdown
+                      const Text(
+                        'Select Package:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: DropdownButton<String>(
+                          value: _selectedPackage,
+                          hint: const Text('Choose a package'),
+                          isExpanded: true,
+                          underline: Container(),
+                          items: _packages.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedPackage = value;
+                            });
+                          },
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 25,
+                        ),
+                        child: Text(
+                          'Select Therapy Time',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

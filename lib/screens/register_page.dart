@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:unispa_mobileapp/components/login_form.dart';
-import 'package:unispa_mobileapp/components/social_button.dart';
+import 'package:unispa_mobileapp/components/register_form.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:unispa_mobileapp/utils/text.dart';
 
-class AuthPage extends StatefulWidget {
-  const AuthPage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<AuthPage> createState() => _AuthPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     Config().init(context);
@@ -25,7 +24,7 @@ class _AuthPageState extends State<AuthPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                AppText.enText['welcome_text']!,
+                AppText.enText['register_text']!,
                 style: const TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -33,7 +32,7 @@ class _AuthPageState extends State<AuthPage> {
               ),
               Config.spaceSmall,
               Text(
-                AppText.enText['signIn_text']!,
+                AppText.enText['register_greet']!,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -41,47 +40,16 @@ class _AuthPageState extends State<AuthPage> {
               ),
               Config.spaceSmall,
               //Login Components
-              const LoginForm(),
+              const RegisterForm(),
               Config.spaceSmall,
-              Center(
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    AppText.enText['forgot_password']!,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
               //Social Button Sign In
               const Spacer(),
-              Center(
-                child: Text(
-                  AppText.enText['social_login']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ),
-              Config.spaceSmall,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const <Widget>[
-                  SocialButton(social: 'google'),
-                  SocialButton(social: 'facebook'),
-                ],
-              ),
               Config.spaceSmall,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    AppText.enText['signUp_text']!,
+                    AppText.enText['registered_text']!,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.normal,
@@ -91,10 +59,10 @@ class _AuthPageState extends State<AuthPage> {
                   TextButton(
                     onPressed: () {
                       //Redirect to registration page
-                      Navigator.of(context).pushNamed('register');
+                      Navigator.of(context).pushNamed('/');
                     },
                     child: const Text(
-                      'Sign Up',
+                      'Sign In Now',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
