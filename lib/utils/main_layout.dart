@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unispa_mobileapp/screens/appointment_page.dart';
 import 'package:unispa_mobileapp/screens/home_page.dart';
+import 'package:unispa_mobileapp/screens/packages_page.dart';
+import 'package:unispa_mobileapp/screens/booking_history_page.dart';
+
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -19,13 +22,17 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       body: PageView(
         controller: _page,
-        onPageChanged: ((value) {
+        onPageChanged: (value) {
           setState(() {
-            //Update page index when tab pressed/switching page
             currentPage = value;
           });
-        }),
-        children: const <Widget>[HomePage(), AppointmentPage()],
+        },
+        children: const <Widget>[
+          HomePage(),
+          PackagesPage(),
+          AppointmentPage(),
+          BookingHistoryPage(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentPage,
@@ -39,14 +46,23 @@ class _MainLayoutState extends State<MainLayout> {
             );
           });
         },
-        items: const <BottomNavigationBarItem>[
+        type: BottomNavigationBarType.fixed,
+        items: const [
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.houseChimneyMedical),
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.list),
+            label: 'Packages',
+          ),
+          BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.solidCalendarCheck),
             label: 'Appointments',
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.clockRotateLeft),
+            label: 'History',
           ),
         ],
       ),

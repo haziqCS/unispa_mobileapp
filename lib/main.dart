@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/screens/auth_page.dart';
 import 'package:unispa_mobileapp/screens/booking_page.dart';
 import 'package:unispa_mobileapp/screens/doctor_details.dart';
+import 'package:unispa_mobileapp/screens/invoice_page.dart';
+import 'package:unispa_mobileapp/screens/package_details.dart';
+import 'package:unispa_mobileapp/screens/payment_page.dart';
+import 'package:unispa_mobileapp/screens/profile_page.dart';
 import 'package:unispa_mobileapp/screens/register_page.dart';
 import 'package:unispa_mobileapp/screens/success_booked.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
@@ -56,9 +60,13 @@ class MyApp extends StatelessWidget {
         'register': (context) => const RegisterPage(),
         //This is for main layout after login
         'main': (context) => const MainLayout(),
+        'package_details': (context) => const PackageDetails(),
         'doc_details': (context) => const DoctorDetails(),
         'booking_page': (context) => const BookingPage(),
+        'payment_page': (context) => const PaymentPage(),
         'success_booking': (context) => const AppointmentBooked(),
+        'invoice': (context) => const InvoicePage(),
+        'profile': (context) => const ProfilePage(),
       },
       //home: const MyHomePage(title: 'UniSpa App'),
     );

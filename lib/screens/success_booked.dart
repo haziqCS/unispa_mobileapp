@@ -7,6 +7,14 @@ class AppointmentBooked extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Placeholder invoice data
+    final invoiceData = {
+      'invoiceNumber': 'INV-20240705',
+      'totalPrice': 150.00,
+      'paymentStatus': 'Paid',
+      'timestamp': DateTime.now().toString(),
+    };
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -22,13 +30,17 @@ class AppointmentBooked extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            //Back to Home Page
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Button(
                 width: double.infinity,
-                title: 'Back to Home Page',
-                onPressed: () => Navigator.of(context).pushNamed('main'),
+                title: 'View Invoice',
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                    'invoice',
+                    arguments: invoiceData,
+                  );
+                },
                 disable: false,
               ),
             ),

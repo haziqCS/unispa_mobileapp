@@ -6,14 +6,14 @@ class Button extends StatelessWidget {
     Key? key,
     required this.width,
     required this.title,
-    required this.onPressed,
+    this.onPressed,
     required this.disable,
   }) : super(key: key);
 
   final double width;
   final String title;
   final bool disable;
-  final Function() onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
