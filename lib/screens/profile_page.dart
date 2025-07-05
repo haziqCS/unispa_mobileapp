@@ -10,7 +10,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sample user data placeholder
+    // Placeholder user data
     final user = {
       'name': 'John Doe',
       'gender': 'Male',
@@ -48,6 +48,35 @@ class ProfilePage extends StatelessWidget {
       );
     }
 
+    void _confirmLogout(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              onPressed: () {
+                Navigator.of(ctx).pop(); // Close dialog
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/',
+                  (route) => false,
+                );
+              },
+              child: const Text('Log Out'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: CustomAppbar(
         appTitle: 'Profile',
@@ -76,6 +105,22 @@ class ProfilePage extends StatelessWidget {
                   );
                 },
                 disable: false,
+              ),
+              const SizedBox(height: 15),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.logout),
+                  label: const Text('Log Out'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade600,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () => _confirmLogout(context),
+                ),
               ),
             ],
           ),

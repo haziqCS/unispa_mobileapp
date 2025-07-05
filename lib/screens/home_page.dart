@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:unispa_mobileapp/components/appointment_card.dart';
+import 'package:unispa_mobileapp/components/promo_card.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
-
-import 'package:unispa_mobileapp/components/package_card.dart'; // ✅
-import 'package:unispa_mobileapp/services/api_service.dart'; //
+import 'package:unispa_mobileapp/components/package_card.dart'; 
+import 'package:unispa_mobileapp/services/api_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -162,7 +161,7 @@ class _HomePageState extends State<HomePage> {
 
                       Config.spaceSmall,
 
-                      AppointmentCard(),
+                      PromoCard(),
 
                       Config.spaceSmall,
 

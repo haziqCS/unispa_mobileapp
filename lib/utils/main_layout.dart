@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:unispa_mobileapp/screens/appointment_page.dart';
 import 'package:unispa_mobileapp/screens/home_page.dart';
 import 'package:unispa_mobileapp/screens/packages_page.dart';
 import 'package:unispa_mobileapp/screens/booking_history_page.dart';
@@ -30,7 +29,6 @@ class _MainLayoutState extends State<MainLayout> {
         children: const <Widget>[
           HomePage(),
           PackagesPage(),
-          AppointmentPage(),
           BookingHistoryPage(),
         ],
       ),
@@ -55,10 +53,6 @@ class _MainLayoutState extends State<MainLayout> {
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.list),
             label: 'Packages',
-          ),
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.solidCalendarCheck),
-            label: 'Appointments',
           ),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.clockRotateLeft),

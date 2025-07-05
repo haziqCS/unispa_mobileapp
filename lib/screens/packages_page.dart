@@ -15,11 +15,11 @@ class _PackagesPageState extends State<PackagesPage> {
 
   Future<Map<String, dynamic>>? _packagesFuture;
 
-  List<Map<String, dynamic>> _packages = [];
-  List<Map<String, dynamic>> _filteredPackages = [];
-  List<String> _categories = [];
+  //List<Map<String, dynamic>> _packages = [];
+  //List<Map<String, dynamic>> _filteredPackages = [];
+  //List<String> _categories = [];
   String? _selectedCategory = 'ALL'; // <- Always have initial value
-  String? _error;
+  //String? _error;
 
   @override
   void initState() {
