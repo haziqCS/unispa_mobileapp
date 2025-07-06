@@ -6,6 +6,11 @@ class Config {
   static double? screenWidth;
   static double? screenHeight;
 
+  static const apiURL = 'http://10.0.2.2:8000/api';
+  static const loginAPI = '/login';
+  static const logoutAPI = '/logout';
+  static const profileAPI = '/v1/me';
+
   //Width and Height initialization
   void init(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -41,4 +46,10 @@ class Config {
   );
 
   static const primaryColor = Colors.greenAccent;
+
+  static showSnack(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
 }

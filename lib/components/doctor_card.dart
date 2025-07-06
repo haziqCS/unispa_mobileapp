@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 
 class DoctorCard extends StatelessWidget {
-  const DoctorCard({Key? key, required this.route}) : super(key: key);
+  const DoctorCard({super.key, required this.route});
 
   final String route;
 

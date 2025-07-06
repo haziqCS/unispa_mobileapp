@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 
 class AppointmentCard extends StatefulWidget {
-  const AppointmentCard({Key? key}) : super(key: key);
+  const AppointmentCard({super.key});
 
   @override
   State<AppointmentCard> createState() => _AppointmentCardState();
@@ -89,7 +89,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
 //Schedule Widget
 class ScheduleCard extends StatelessWidget {
-  const ScheduleCard({Key? key}) : super(key: key);
+  const ScheduleCard({super.key});
 
   @override
   Widget build(BuildContext context) {

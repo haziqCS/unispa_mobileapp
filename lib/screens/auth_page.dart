@@ -5,7 +5,7 @@ import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:unispa_mobileapp/utils/text.dart';
 
 class AuthPage extends StatefulWidget {
-  const AuthPage({Key? key}) : super(key: key);
+  const AuthPage({super.key});
 
   @override
   State<AuthPage> createState() => _AuthPageState();

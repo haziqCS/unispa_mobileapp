@@ -5,7 +5,7 @@ import 'package:unispa_mobileapp/components/button.dart';
 import '../components/custom_appbar.dart';
 
 class PackageDetails extends StatefulWidget {
-  const PackageDetails({Key? key}) : super(key: key);
+  const PackageDetails({super.key});
 
   @override
   State<PackageDetails> createState() => _PackageDetailsState();

@@ -6,6 +6,7 @@ import 'package:unispa_mobileapp/components/custom_appbar.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 
 import '../services/api_service.dart';
+import '../utils/booking_service.dart'; // <-- Add this import
 
 class BookingPage extends StatefulWidget {
   const BookingPage({super.key}); //Shorthand version
@@ -16,6 +17,11 @@ class BookingPage extends StatefulWidget {
 
 class _BookingPageState extends State<BookingPage> {
   final ApiService _apiService = ApiService();
+  final BookingService _bookingService =
+      BookingService(); // <-- BookingService instance
+
+  final Map<String, List<Map<String, dynamic>>> _packageOptionsByName = {};
+  int? _selectedOptionId;
 
   //Declaration
   CalendarFormat _format = CalendarFormat.month;
@@ -37,10 +43,16 @@ class _BookingPageState extends State<BookingPage> {
   final _phoneController = TextEditingController();
 
   List<String> _packages = [];
-  final List<String> _paymentMethods = ['Touch n Go', 'QR Payment', 'FPX'];
+  final List<String> _paymentMethods = ['Card', 'Online Banking', 'Cash'];
 
   bool _isLoading = true;
   String? _errorMessage;
+
+  // Submission state
+  bool _isSubmitting = false;
+  String? _submitError;
+
+  TimeOfDay? _selectedTime;
 
   @override
   void initState() {
@@ -59,11 +71,24 @@ class _BookingPageState extends State<BookingPage> {
   Future<void> _fetchPackages() async {
     try {
       final packagesMap = await _apiService.fetchPackages();
+      print('Fetched packages map: $packagesMap');
 
       List<String> packageNames = [];
+      _packageOptionsByName.clear();
+
       packagesMap.forEach((category, packagesList) {
         for (var package in packagesList) {
-          packageNames.add(package['package_name'] as String);
+          String name = package['package_name'] as String;
+          packageNames.add(name);
+
+          // Save options list
+          if (package['options'] != null) {
+            _packageOptionsByName[name] = List<Map<String, dynamic>>.from(
+              package['options'],
+            );
+          } else {
+            _packageOptionsByName[name] = [];
+          }
         }
       });
 
@@ -72,6 +97,7 @@ class _BookingPageState extends State<BookingPage> {
         _isLoading = false;
       });
     } catch (e) {
+      print('ERROR fetching packages: $e');
       setState(() {
         _errorMessage = 'Failed to load packages';
         _isLoading = false;
@@ -81,12 +107,63 @@ class _BookingPageState extends State<BookingPage> {
 
   bool get _isFormValid {
     return _dateSelected &&
-        _timeSelected &&
+        _selectedTime != null &&
         _selectedPackage != null &&
+        _selectedOptionId != null &&
         _name.trim().isNotEmpty &&
         _phone.trim().isNotEmpty &&
         _selectedPaymentMethod != null &&
         _pax > 0;
+  }
+
+  Future<void> _handleMakeAppointment() async {
+    if (!_isFormValid) return;
+
+    setState(() {
+      _isSubmitting = true;
+      _submitError = null;
+    });
+
+    try {
+      final packageId = _selectedOptionId!;
+      if (packageId == null) throw Exception('Invalid package selected');
+      if (_selectedTime == null) throw Exception('Please select a time slot');
+
+      final hourStr = _selectedTime!.hour.toString().padLeft(2, '0');
+      final minuteStr = _selectedTime!.minute.toString().padLeft(2, '0');
+      final itemStartTime = '$hourStr:$minuteStr';
+
+      final items = [
+        {
+          'package_id': packageId,
+          'item_pax': _pax,
+          'item_start_time': itemStartTime,
+          'for_whom_name': _name,
+        },
+      ];
+
+      final bookingDate = _currentDay.toIso8601String().substring(0, 10);
+
+      final result = await _bookingService.createBooking(
+        bookingDate: bookingDate,
+        paymentMethod: _selectedPaymentMethod!,
+        notes: null,
+        items: items,
+      );
+
+      Navigator.of(context).pushNamed(
+        'payment_page',
+        arguments: {'booking': result['booking'], 'invoice': result['invoice']},
+      );
+    } catch (e) {
+      setState(() {
+        _submitError = 'Failed to create booking: ${e.toString()}';
+      });
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
   }
 
   @override
@@ -212,10 +289,64 @@ class _BookingPageState extends State<BookingPage> {
                             onChanged: (value) {
                               setState(() {
                                 _selectedPackage = value;
+
+                                // Reset selected option to first option if exists
+                                if (value != null &&
+                                    _packageOptionsByName.containsKey(value) &&
+                                    _packageOptionsByName[value]!.isNotEmpty) {
+                                  _selectedOptionId =
+                                      _packageOptionsByName[value]![0]['package_id']
+                                          as int;
+                                } else {
+                                  _selectedOptionId = null;
+                                }
                               });
                             },
                           ),
                         ),
+                        if (_selectedPackage != null &&
+                            _packageOptionsByName[_selectedPackage!] != null)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            margin: const EdgeInsets.only(top: 12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: DropdownButton<int>(
+                              value: _selectedOptionId,
+                              hint: const Text('Select Duration & Price'),
+                              isExpanded: true,
+                              underline: Container(),
+                              items: _packageOptionsByName[_selectedPackage!]!
+                                  .map((option) {
+                                    String duration =
+                                        option['duration'] ??
+                                        'Unknown Duration';
+                                    String price =
+                                        option['package_price'] != null
+                                        ? double.tryParse(
+                                                option['package_price']
+                                                    .toString(),
+                                              )?.toStringAsFixed(2) ??
+                                              'N/A'
+                                        : 'N/A';
+                                    int optionId = option['package_id'] as int;
+
+                                    return DropdownMenuItem<int>(
+                                      value: optionId,
+                                      child: Text('$duration - RM $price'),
+                                    );
+                                  })
+                                  .toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedOptionId = value;
+                                });
+                              },
+                            ),
+                          ),
 
                         const SizedBox(height: 25),
                         const Text(
@@ -247,47 +378,38 @@ class _BookingPageState extends State<BookingPage> {
                           ),
                         ),
                       )
-                    : SliverGrid(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return InkWell(
-                            splashColor: Colors.transparent,
-                            onTap: () {
-                              setState(() {
-                                _currentIndex = index;
-                                _timeSelected = true;
-                              });
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: _currentIndex == index
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                                borderRadius: BorderRadius.circular(15),
-                                color: _currentIndex == index
-                                    ? Config.primaryColor
-                                    : null,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                '${index + 9}:00 ${index + 9 > 11 ? "PM" : "AM"}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _currentIndex == index
-                                      ? Colors.white
-                                      : null,
+                    : SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ElevatedButton(
+                                onPressed: _isWeekend
+                                    ? null
+                                    : () async {
+                                        final pickedTime = await showTimePicker(
+                                          context: context,
+                                          initialTime:
+                                              _selectedTime ??
+                                              TimeOfDay(hour: 9, minute: 0),
+                                        );
+                                        if (pickedTime != null) {
+                                          setState(() {
+                                            _selectedTime = pickedTime;
+                                            _timeSelected = true;
+                                          });
+                                        }
+                                      },
+                                child: Text(
+                                  _selectedTime != null
+                                      ? 'Selected Time: ${_selectedTime!.format(context)}'
+                                      : 'Select Therapy Time',
                                 ),
                               ),
-                            ),
-                          );
-                        }, childCount: 8),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
-                              childAspectRatio: 1.5,
-                            ),
+                            ],
+                          ),
+                        ),
                       ),
 
                 SliverToBoxAdapter(
@@ -337,19 +459,35 @@ class _BookingPageState extends State<BookingPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
+                      vertical: 10,
+                    ),
+                    child: _submitError != null
+                        ? Text(
+                            _submitError!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : const SizedBox.shrink(), // Empty widget when no error
+                  ),
+                ),
+
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
                       vertical: 40,
                     ),
                     child: Button(
                       width: double.infinity,
-                      title: 'Make Appointment',
-                      onPressed: _isFormValid
-                          ? () {
-                              Navigator.of(
-                                context,
-                              ).pushNamed('payment_page');
-                            }
+                      title: _isSubmitting
+                          ? 'Submitting...'
+                          : 'Make Appointment',
+                      onPressed: _isFormValid && !_isSubmitting
+                          ? _handleMakeAppointment
                           : null,
-                      disable: !_isFormValid,
+                      disable: !_isFormValid || _isSubmitting,
                     ),
                   ),
                 ),

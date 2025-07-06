@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:unispa_mobileapp/screens/admin/add_package_page.dart'; // <-- Make sure you import this!
 import 'package:unispa_mobileapp/screens/admin/admin_edit_package.dart'; // <-- Make sure you import this!
+import 'package:unispa_mobileapp/services/api_service.dart';
 
 class AdminPackagesListPage extends StatefulWidget {
   const AdminPackagesListPage({super.key});
@@ -13,6 +14,13 @@ class AdminPackagesListPage extends StatefulWidget {
 class _AdminPackagesListPageState extends State<AdminPackagesListPage> {
   final TextEditingController _searchController = TextEditingController();
   String? _searchQuery;
+  Future<List<dynamic>>? _packagesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _packagesFuture = ApiService().fetchAllPackagesFlat();
+  }
 
   final List<Map<String, String>> _packages = [
     {
@@ -32,16 +40,6 @@ class _AdminPackagesListPageState extends State<AdminPackagesListPage> {
   @override
   Widget build(BuildContext context) {
     Config().init(context);
-
-    final filteredPackages = _searchQuery == null || _searchQuery!.isEmpty
-        ? _packages
-        : _packages
-              .where(
-                (p) => p['name']!.toLowerCase().contains(
-                  _searchQuery!.toLowerCase(),
-                ),
-              )
-              .toList();
 
     return Scaffold(
       body: SafeArea(
@@ -69,36 +67,69 @@ class _AdminPackagesListPageState extends State<AdminPackagesListPage> {
               ),
               Config.spaceSmall,
               Expanded(
-                child: ListView.builder(
-                  itemCount: filteredPackages.length,
-                  itemBuilder: (context, index) {
-                    final p = filteredPackages[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: ListTile(
-                        title: Text('${p['name']} (${p['duration']})'),
-                        subtitle: Text('ID: ${p['id']} - ${p['price']}'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () {
-                                // TODO: Navigate to edit page
-                                Navigator.of(
-                                  context,
-                                ).push(MaterialPageRoute(builder: (_) => const EditPackagePage()));
-                              },
+                child: FutureBuilder<List<dynamic>>(
+                  future: _packagesFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No packages found'));
+                    }
+
+                    final allPackages = snapshot.data!;
+                    final filteredPackages =
+                        _searchQuery == null || _searchQuery!.isEmpty
+                        ? allPackages
+                        : allPackages.where((p) {
+                            final name = p['package_name']?.toLowerCase() ?? '';
+                            return name.contains(_searchQuery!.toLowerCase());
+                          }).toList();
+
+                    return ListView.builder(
+                      itemCount: filteredPackages.length,
+                      itemBuilder: (context, index) {
+                        final p = filteredPackages[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            title: Text('${p['package_name']}'),
+                            subtitle: Text(
+                              p['options'] != null && p['options'].isNotEmpty
+                                  ? 'ID: ${p['options'][0]['package_id']} - RM ${p['options'][0]['package_price']} - ${p['options'][0]['duration']}'
+                                  : 'No options available',
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                // TODO: Implement delete action
-                              },
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.blue,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const EditPackagePage(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    // TODO: Implement delete
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -108,7 +139,6 @@ class _AdminPackagesListPageState extends State<AdminPackagesListPage> {
         ),
       ),
 
-      // ✅ FloatingActionButton
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(

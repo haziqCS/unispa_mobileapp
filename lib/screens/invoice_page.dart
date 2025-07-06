@@ -7,17 +7,25 @@ class InvoicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
-    final invoiceNumber = args['invoiceNumber'];
-    final totalPrice = args['totalPrice'];
-    final paymentStatus = args['paymentStatus'];
-    final timestamp = DateFormat('yyyy-MM-dd HH:mm').format(
-      DateTime.parse(args['timestamp']),
-    );
+
+    final invoiceNumber = args['invoiceNumber']?.toString() ?? 'N/A';
+    final totalPrice = args['totalPrice'] ?? 0.0;
+    final paymentStatus = args['paymentStatus']?.toString() ?? 'Unknown';
+    final timestampString = args['timestamp']?.toString();
+
+    String formattedTimestamp = 'N/A';
+    if (timestampString != null && timestampString.isNotEmpty) {
+      try {
+        formattedTimestamp = DateFormat(
+          'yyyy-MM-dd HH:mm',
+        ).format(DateTime.parse(timestampString));
+      } catch (e) {
+        // If parsing fails, keep 'N/A'
+      }
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Invoice'),
-      ),
+      appBar: AppBar(title: const Text('Invoice')),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -25,10 +33,7 @@ class InvoicePage extends StatelessWidget {
           children: [
             Text(
               'Invoice #$invoiceNumber',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Text(
@@ -45,7 +50,7 @@ class InvoicePage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Date: $timestamp',
+              'Date: $formattedTimestamp',
               style: const TextStyle(fontSize: 18),
             ),
             const Spacer(),

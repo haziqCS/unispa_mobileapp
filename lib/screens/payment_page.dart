@@ -6,21 +6,37 @@ import 'package:unispa_mobileapp/components/custom_appbar.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({Key? key}) : super(key: key);
+  const PaymentPage({super.key});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+   Map<String, dynamic>? invoiceData;
+
   @override
   void initState() {
     super.initState();
+  }
 
-    // Start a 5 second timer
-    Timer(const Duration(seconds: 5), () {
-      _showPaymentCompleteDialog();
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // This runs once when dependencies change (including first build)
+    if (invoiceData == null) {
+      // so this runs only once
+      final args = ModalRoute.of(context)?.settings.arguments as Map?;
+      invoiceData = args != null ? args['invoice'] : null;
+
+      Timer(const Duration(seconds: 5), () {
+        Navigator.of(context).pushReplacementNamed(
+          'success_booking',
+          arguments: {'invoice': invoiceData},
+        );
+      });
+    }
   }
 
   void _showPaymentCompleteDialog() {
@@ -59,10 +75,7 @@ class _PaymentPageState extends State<PaymentPage> {
             children: [
               const Text(
                 'Scan the QR Code to Pay',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 30),
               Expanded(

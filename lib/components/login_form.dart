@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:unispa_mobileapp/components/button.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
+import 'package:unispa_mobileapp/utils/auth_service.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  const LoginForm({super.key});
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -24,6 +24,12 @@ class _LoginFormState extends State<LoginForm> {
         children: <Widget>[
           TextFormField(
             controller: _emailController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter email';
+              }
+              return null;
+            },
             keyboardType: TextInputType.emailAddress,
             cursorColor: Config.primaryColor,
             decoration: const InputDecoration(
@@ -37,6 +43,12 @@ class _LoginFormState extends State<LoginForm> {
           Config.spaceSmall,
           TextFormField(
             controller: _passController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter password';
+              }
+              return null;
+            },
             keyboardType: TextInputType.visiblePassword,
             cursorColor: Config.primaryColor,
             obscureText: obsecurePass,
@@ -69,9 +81,35 @@ class _LoginFormState extends State<LoginForm> {
           Button(
             width: double.infinity,
             title: 'Sign In',
-            onPressed: () {
-              //Manual Sign In
-              Navigator.of(context).pushNamed('main');
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                final email = _emailController.text.trim();
+                final password = _passController.text;
+
+                // Simple check: if admin username + hardcoded password for example
+                if (email == 'admin' && password == 'admin123') {
+                  Config.showSnack(context, 'Admin login successful!');
+                  Navigator.of(context).pushReplacementNamed('admin_homepage');
+                  return; // skip normal flow
+                }
+
+                print('📡 Calling AuthService.login...');
+                final authService = AuthService();
+                final result = await authService.login(email, password);
+                print('✅ AuthService.login returned: $result');
+
+                if (result['success']) {
+                  if (!mounted) return;
+                  Config.showSnack(context, 'Login successful!');
+                  Navigator.of(context).pushReplacementNamed('main');
+                } else {
+                  if (!mounted) return;
+                  Config.showSnack(
+                    context,
+                    result['message'] ?? 'Login failed',
+                  );
+                }
+              }
             },
             disable: false,
           ),

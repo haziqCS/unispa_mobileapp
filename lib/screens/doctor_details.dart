@@ -5,7 +5,7 @@ import 'package:unispa_mobileapp/utils/config.dart';
 import '../components/custom_appbar.dart';
 
 class DoctorDetails extends StatefulWidget {
-  const DoctorDetails({Key? key}) : super(key: key);
+  const DoctorDetails({super.key});
 
   @override
   State<DoctorDetails> createState() => _DoctorDetailsState();
@@ -163,8 +163,7 @@ class DoctorInfo extends StatelessWidget {
 }
 
 class InfoCard extends StatelessWidget {
-  const InfoCard({Key? key, required this.label, required this.value})
-    : super(key: key);
+  const InfoCard({super.key, required this.label, required this.value});
 
   final String label;
   final String value;

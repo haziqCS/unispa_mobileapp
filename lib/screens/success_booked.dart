@@ -7,13 +7,12 @@ class AppointmentBooked extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Placeholder invoice data
-    final invoiceData = {
-      'invoiceNumber': 'INV-20240705',
-      'totalPrice': 150.00,
-      'paymentStatus': 'Paid',
-      'timestamp': DateTime.now().toString(),
-    };
+    final args = ModalRoute.of(context)!.settings.arguments as Map?;
+    final invoiceData = args?['invoice'];
+
+    if (invoiceData == null) {
+      return Scaffold(body: Center(child: Text('Invoice data not available')));
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -38,7 +37,16 @@ class AppointmentBooked extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushNamed(
                     'invoice',
-                    arguments: invoiceData,
+                    arguments: {
+                      'invoiceNumber': invoiceData['invoice_number'],
+                      'totalPrice':
+                          double.tryParse(
+                            invoiceData['total_price'].toString(),
+                          ) ??
+                          0.0,
+                      'paymentStatus': invoiceData['payment_status'],
+                      'timestamp': invoiceData['generated_at'],
+                    },
                   );
                 },
                 disable: false,

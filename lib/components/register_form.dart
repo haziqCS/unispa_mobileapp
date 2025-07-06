@@ -1,10 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:unispa_mobileapp/components/button.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
+import 'package:unispa_mobileapp/utils/auth_service.dart';
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({Key? key}) : super(key: key);
+  const RegisterForm({super.key});
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
@@ -12,232 +11,105 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
-
-  final _fullNameController = TextEditingController();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passController = TextEditingController();
-  final _confirmPassController = TextEditingController();
-
-  bool obsecurePass = true;
-  bool obsecureConfirmPass = true;
-  String? _gender = 'Male'; // default
+  final _passConfirmController = TextEditingController();
+  String _selectedGender = 'male'; // default gender
+  final _phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          //Fullname
+        children: [
           TextFormField(
-            controller: _fullNameController,
-            keyboardType: TextInputType.name,
-            cursorColor: Config.primaryColor,
-            decoration: const InputDecoration(
-              hintText: 'Full Name',
-              labelText: 'Full Name',
-              alignLabelWithHint: true,
-              prefixIcon: Icon(Icons.person_outline),
-              prefixIconColor: Config.primaryColor,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Full name is required';
-              }
-              return null;
-            },
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
+            validator: (v) => v!.isEmpty ? 'Name required' : null,
           ),
           Config.spaceSmall,
-
-          //Email
           TextFormField(
             controller: _emailController,
+            decoration: const InputDecoration(labelText: 'Email'),
             keyboardType: TextInputType.emailAddress,
-            cursorColor: Config.primaryColor,
-            decoration: const InputDecoration(
-              hintText: 'Email Address',
-              labelText: 'Email',
-              alignLabelWithHint: true,
-              prefixIcon: Icon(Icons.email_outlined),
-              prefixIconColor: Config.primaryColor,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Email is required';
-              }
-              if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              ).hasMatch(value)) {
-                return 'Enter a valid email';
-              }
-              return null;
-            },
+            validator: (v) => v!.isEmpty ? 'Email required' : null,
           ),
           Config.spaceSmall,
-
-          // Phone Number
           TextFormField(
             controller: _phoneController,
+            decoration: const InputDecoration(labelText: 'Phone No'),
             keyboardType: TextInputType.phone,
-            cursorColor: Config.primaryColor,
-            decoration: const InputDecoration(
-              hintText: 'Phone Number',
-              labelText: 'Phone',
-              alignLabelWithHint: true,
-              prefixIcon: Icon(Icons.phone_outlined),
-              prefixIconColor: Config.primaryColor,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Phone number is required';
-              }
-              if (!RegExp(r'^\+?\d{7,15}$').hasMatch(value)) {
-                return 'Enter a valid phone number';
-              }
-              return null;
-            },
+            validator: (v) => v!.isEmpty ? 'Phone required' : null,
           ),
           Config.spaceSmall,
-
-          // Password
+          _buildGenderSelector(),
+          Config.spaceSmall,
           TextFormField(
             controller: _passController,
-            keyboardType: TextInputType.visiblePassword,
-            cursorColor: Config.primaryColor,
-            obscureText: obsecurePass,
-            decoration: InputDecoration(
-              hintText: 'Password',
-              labelText: 'Password',
-              alignLabelWithHint: true,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              prefixIconColor: Config.primaryColor,
-              suffixIcon: IconButton(
-                onPressed: () {
-                  setState(() {
-                    obsecurePass = !obsecurePass;
-                  });
-                },
-                icon: obsecurePass
-                    ? const Icon(
-                        Icons.visibility_off_outlined,
-                        color: Colors.black38,
-                      )
-                    : const Icon(
-                        Icons.visibility_outlined,
-                        color: Config.primaryColor,
-                      ),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Password is required';
-              }
-              if (value.length < 6) {
-                return 'Password must be at least 6 characters';
-              }
-              return null;
-            },
+            decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: true,
+            validator: (v) => v!.length < 6 ? 'Min 6 chars' : null,
           ),
           Config.spaceSmall,
-
-          // Confirm Password
           TextFormField(
-            controller: _confirmPassController,
-            keyboardType: TextInputType.visiblePassword,
-            cursorColor: Config.primaryColor,
-            obscureText: obsecureConfirmPass,
-            decoration: InputDecoration(
-              hintText: 'Confirm Password',
-              labelText: 'Confirm Password',
-              alignLabelWithHint: true,
-              prefixIcon: const Icon(Icons.lock_outline),
-              prefixIconColor: Config.primaryColor,
-              suffixIcon: IconButton(
-                onPressed: () {
-                  setState(() {
-                    obsecureConfirmPass = !obsecureConfirmPass;
-                  });
-                },
-                icon: obsecureConfirmPass
-                    ? const Icon(
-                        Icons.visibility_off_outlined,
-                        color: Colors.black38,
-                      )
-                    : const Icon(
-                        Icons.visibility_outlined,
-                        color: Config.primaryColor,
-                      ),
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please confirm your password';
-              }
-              if (value != _passController.text) {
-                return 'Passwords do not match';
-              }
-              return null;
-            },
-          ),
-
-          // Gender Radio Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Gender:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(width: 20),
-              Row(
-                children: [
-                  Radio<String>(
-                    value: 'Male',
-                    groupValue: _gender,
-                    activeColor: Config.primaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        _gender = value;
-                      });
-                    },
-                  ),
-                  const Text('Male'),
-                ],
-              ),
-              const SizedBox(width: 10),
-              Row(
-                children: [
-                  Radio<String>(
-                    value: 'Female',
-                    groupValue: _gender,
-                    activeColor: Config.primaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        _gender = value;
-                      });
-                    },
-                  ),
-                  const Text('Female'),
-                ],
-              ),
-            ],
+            controller: _passConfirmController,
+            decoration: const InputDecoration(labelText: 'Confirm Password'),
+            obscureText: true,
+            validator: (v) =>
+                v != _passController.text ? 'Passwords do not match' : null,
           ),
           Config.spaceSmall,
-
-          //Register Button
-          Button(
+          SizedBox(
             width: double.infinity,
-            title: 'Sign Up',
-            onPressed: () {
-              //Manual Sign In
-              Navigator.of(context).pushNamed('main');
-            },
-            disable: false,
+            child: ElevatedButton(
+              onPressed: _register,
+              child: const Text('Register'),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildGenderSelector() {
+  final genders = ['male', 'female', 'other'];
+  return Wrap(
+    spacing: 8,
+    children: genders.map((g) {
+      final isSelected = g == _selectedGender;
+      return ChoiceChip(
+        label: Text(g[0].toUpperCase() + g.substring(1)),
+        selected: isSelected,
+        onSelected: (_) {
+          setState(() {
+            _selectedGender = g;
+          });
+        },
+      );
+    }).toList(),
+  );
+}
+
+  void _register() async {
+    if (_formKey.currentState!.validate()) {
+      final authService = AuthService();
+      final result = await authService.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phoneNo: _phoneController.text.trim(),
+        gender: _selectedGender,
+        password: _passController.text,
+        passwordConfirmation: _passConfirmController.text,
+      );
+
+      if (result['success'] && mounted) {
+        Config.showSnack(context, 'Registration successful!');
+        Navigator.of(context).pushReplacementNamed('main');
+      } else if (mounted) {
+        Config.showSnack(context, result['message'] ?? 'Registration failed.');
+      }
+    }
   }
 }

@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'Amanda',
+                            'UNISPA Mobile App',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -73,12 +73,7 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               Navigator.of(context).pushNamed('profile');
                             },
-                            child: const CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage(
-                                'assets/profile1.jpg',
-                              ),
-                            ),
+                            child: const FaIcon(FontAwesomeIcons.user,size: 32,),
                           ),
                         ],
                       ),
@@ -152,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                       Config.spaceSmall,
 
                       const Text(
-                        'Appointment Today',
+                        'Promotions',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

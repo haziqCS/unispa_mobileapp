@@ -3,7 +3,7 @@ import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PromoCard extends StatelessWidget {
-  const PromoCard({Key? key}) : super(key: key);
+  const PromoCard({super.key});
 
   @override
   Widget build(BuildContext context) {
