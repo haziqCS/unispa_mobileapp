@@ -20,22 +20,88 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
-      final groupedPackages = jsonData['packages'];
+      final groupedPackages = jsonData['packages'] as Map<String, dynamic>?;
 
       if (groupedPackages == null) {
         throw Exception('No packages found');
       }
 
-      final flatList = groupedPackages.values
-          .where((element) => element is List)
-          .expand((list) => list as List)
+      final flatPackages = groupedPackages.values
+          .whereType<List<dynamic>>()
+          .expand((list) => list)
           .toList();
 
-      print('Fetched packages: $flatList');
+      print('Fetched packages: $flatPackages');
 
-      return flatList;
+      return flatPackages;
     } else {
       throw Exception('Failed to load packages');
     }
+  }
+
+  Future<bool> deletePackage(int packageId) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/v1/packages/$packageId'),
+      headers: {'Accept': 'application/json'},
+    );
+
+    return response.statusCode == 200;
+  }
+
+  Future<bool> addPackage({
+    required String packageName,
+    required String description,
+    required double packagePrice,
+    required String duration,
+    required int capacity,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/v1/packages'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'package_name': packageName,
+        'package_desc': description,
+        'package_price': packagePrice,
+        'duration': duration,
+        'capacity': capacity,
+      }),
+    );
+
+    return response.statusCode == 201;
+  }
+
+  Future<bool> updatePackage({
+    required int packageId,
+    required String packageName,
+    required String packageDesc, // <-- packageDesc param here
+    required List<Map<String, dynamic>> options, // <-- options list here
+  }) async {
+    final url = '$baseUrl/v1/packages/$packageId';
+    final body = {
+      'package_name': packageName,
+      'description':
+          packageDesc, // <-- use package_desc as expected by backend
+      'options': options, // <-- send options array
+    };
+
+    print('📤 PUT $url');
+    print('📤 Body: ${json.encode(body)}');
+
+    final response = await http.put(
+      Uri.parse(url),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(body),
+    );
+
+    print('🔵 Status: ${response.statusCode}');
+    print('🔵 Response: ${response.body}');
+
+    return response.statusCode == 200;
   }
 }

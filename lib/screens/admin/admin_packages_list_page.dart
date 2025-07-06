@@ -111,7 +111,8 @@ class _AdminPackagesListPageState extends State<AdminPackagesListPage> {
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) => const EditPackagePage(),
+                                        builder: (_) =>
+                                            EditPackagePage(package: p),
                                       ),
                                     );
                                   },
@@ -121,8 +122,50 @@ class _AdminPackagesListPageState extends State<AdminPackagesListPage> {
                                     Icons.delete,
                                     color: Colors.red,
                                   ),
-                                  onPressed: () {
-                                    // TODO: Implement delete
+                                  onPressed: () async {
+                                    final packageId =
+                                        p['options'][0]['package_id'];
+                                    final confirmed = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Confirm Delete'),
+                                        content: const Text(
+                                          'Are you sure you want to delete this package?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                            child: const Text('Delete'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (confirmed == true) {
+                                      final success = await ApiService()
+                                          .deletePackage(packageId);
+                                      if (success) {
+                                        Config.showSnack(
+                                          context,
+                                          'Package deleted!',
+                                        );
+                                        setState(() {
+                                          _packagesFuture = ApiService()
+                                              .fetchAllPackagesFlat();
+                                        });
+                                      } else {
+                                        Config.showSnack(
+                                          context,
+                                          'Failed to delete package.',
+                                        );
+                                      }
+                                    }
                                   },
                                 ),
                               ],
