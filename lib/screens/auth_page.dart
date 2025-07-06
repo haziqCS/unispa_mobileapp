@@ -45,7 +45,10 @@ class _AuthPageState extends State<AuthPage> {
               Config.spaceSmall,
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    //Redirect to admin page [FOR TESTING ONLY,REMOVE AFTER FINISHING]
+                      Navigator.of(context).pushNamed('admin');
+                  },
                   child: Text(
                     AppText.enText['forgot_password']!,
                     style: const TextStyle(

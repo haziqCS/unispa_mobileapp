@@ -10,6 +10,7 @@ import 'package:unispa_mobileapp/screens/register_page.dart';
 import 'package:unispa_mobileapp/screens/success_booked.dart';
 import 'package:unispa_mobileapp/utils/config.dart';
 import 'package:unispa_mobileapp/utils/main_layout.dart';
+import 'package:unispa_mobileapp/screens/admin/admin_layout.dart';
 
 void main() {
   runApp(const MyApp());
@@ -67,6 +68,7 @@ class MyApp extends StatelessWidget {
         'success_booking': (context) => const AppointmentBooked(),
         'invoice': (context) => const InvoicePage(),
         'profile': (context) => const ProfilePage(),
+        'admin': (context) => const AdminLayout(),
       },
       //home: const MyHomePage(title: 'UniSpa App'),
     );
