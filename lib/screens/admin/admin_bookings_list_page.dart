@@ -15,14 +15,14 @@ class _AdminBookingsListPageState extends State<AdminBookingsListPage> {
   // Placeholder bookings
   final List<Map<String, String>> _bookings = [
     {
-      'name': 'John Doe',
+      'name': 'Zulhaziq',
       'phone': '+60123456789',
       'package': 'Facial Treatment',
       'date': '2025-07-06',
       'time': '2:00 PM',
     },
     {
-      'name': 'Jane Smith',
+      'name': 'Hafiz',
       'phone': '+60198765432',
       'package': 'Full Body Massage',
       'date': '2025-07-07',
